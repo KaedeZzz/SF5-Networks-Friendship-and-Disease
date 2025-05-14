@@ -1,6 +1,5 @@
 import numpy as np
 import timeit
-
 from matplotlib import pyplot as plt
 
 from src.graph_methods.graph_gen import random_graph
