@@ -1,14 +1,18 @@
 import numpy as np
 
-class Network(object):
-    def __init__(self, num_nodes, directed=False):
+
+class Graph(object):
+    def __init__(self, num_nodes: int, directed=False):
         """
         :param num_nodes: the number of nodes in the graph.
         :param directed: whether the graph is directed or undirected.
         """
+        if num_nodes < 1:
+            raise ValueError('Number of nodes must be greater than 1.')
+
         self.num_nodes = num_nodes # Number of nodes in the graph
-        self.adj = np.zeros((num_nodes, num_nodes)) # Initialise with no edges in the graph
-        self.directed = directed # Default is undirected
+        self.adj = np.zeros((num_nodes, num_nodes)) # Initialise adjacency matrix with no edges in the graph
+        self.directed = directed
 
     def add_edge(self, i: int, j: int) -> None:
         """
