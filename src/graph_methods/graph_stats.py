@@ -36,3 +36,17 @@ def get_reachable(network: Graph, starting_node: int = 1) -> list[int]:
             if neighbor not in visited and neighbor not in to_visit:
                 to_visit.append(neighbor)
     return visited
+
+
+def get_degree_dist(graph: Graph) -> list[int]:
+    """
+    Get degree distribution of a graph as a list.
+    :param graph: the graph to count.
+    :return: a list of degrees of each node.
+    """
+
+    degree_dist: list[int] = []
+    for i in range(graph.num_nodes):
+        degree_dist.append(len(graph.neighbors(i)))
+
+    return degree_dist

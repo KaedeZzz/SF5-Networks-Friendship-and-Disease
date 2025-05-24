@@ -20,6 +20,9 @@ class Graph(object):
         :param i: index of the source node.
         :param j: index of the target node.
         """
+        if i not in range(self.num_nodes) or j not in range(self.num_nodes):
+            raise ValueError('Index out of range.')
+
         if not self.directed:
             # If graph is not directed, adjacency matrix is symmetric and two entries need to be added for one edge
             self.adj[i, j] = 1
@@ -33,6 +36,9 @@ class Graph(object):
         :param i: index of the source node.
         :return: A list of node indices.
         """
+        if i not in range(self.num_nodes):
+            raise ValueError('Index out of range.')
+
         return np.where(self.adj[i, :] == 1)[0]
 
     def edge_list(self) -> list:

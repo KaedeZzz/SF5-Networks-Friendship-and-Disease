@@ -40,5 +40,15 @@ def geometric_sample(p: float) -> int:
     if p < 0 or p > 1:
         raise ValueError('Geometric probability must be between 0 and 1.')
 
-    rng = np.random.default_rng(12345)
-    return rng.geometric(p=p) - 1
+    rng = np.random.default_rng()
+    return int(rng.geometric(p=p, size=1)) - 1
+
+
+def poisson_sample(l: float) -> int:
+    """
+    Sample from a poisson distribution.
+    :param l: Mean of distribution.
+    :return: an integer of sample.
+    """
+    rng = np.random.default_rng()
+    return int(rng.poisson(l))
