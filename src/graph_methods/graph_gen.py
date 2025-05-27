@@ -3,7 +3,7 @@ import numpy as np
 from src.graph import Graph
 from src.tools import *
 
-def edge_list_from_degrees(num_nodes: int, deg: float, dist: str) -> np.ndarray:
+def configuration_model(num_nodes: int, deg: float, dist: str) -> np.ndarray:
     """
     Generates a list of edges by matching each node with the degree distribution.
     :param num_nodes: number of nodes of the graph.
@@ -46,6 +46,8 @@ def random_graph(num_nodes: int, p: float = 0.0, deg: float = 0.0, method: str =
 
     graph = Graph(num_nodes, directed=directed)
 
+
+
     if method == 'naive':
         if p < 0 or p > 1:
             raise ValueError('Probability of edge generation must be between 0 and 1.')
@@ -69,7 +71,7 @@ def random_graph(num_nodes: int, p: float = 0.0, deg: float = 0.0, method: str =
     elif method in ['geometric', 'poisson']:
         if deg < 0:
             raise ValueError('Degree of nodes must not be negative.')
-        edge_list = edge_list_from_degrees(num_nodes, deg, method)
+        edge_list = configuration_model(num_nodes, deg, method)
         for edge in edge_list:
             graph.add_edge(*edge)
 

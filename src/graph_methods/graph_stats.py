@@ -52,30 +52,43 @@ def get_degree_dist(graph: Graph) -> list[int]:
     return degree_dist
 
 
-def get_friends_degree(graph: Graph, method = 'sample', repeat = 500) -> list[float]:
+def get_friends_degree(graph: Graph, method = 'sample', repeat = 2000, return_both = False) -> list[float] | tuple[list[float], list[float]]:
     """
     Get distributions of average of friends' degrees of a graph as a list.
-    :param graph: the graph to count.
-    :return: a list of average of friends' degrees of each node.
+    :param graph: The graph to count.
+    :param method: 'Sample' estimated degree by sampling nodes, and 'iterate' lists all edges by visiting all node pairs.
+    :param repeat: Number of times to repeat the estimate.
+    :return: A list of average of friends' degrees of each node.
     """
 
     degree_dist: list[float] = []
+    second_dist: list[float] = []
 
     if method == 'sample':
-        for _ in range(repeat):
+        count = 0
+        while True:
             i = np.random.randint(graph.num_nodes)
+            if len(graph.neighbors(i)) == 0:
+                continue
+            if return_both:
+                second_dist.append(len(graph.neighbors(i)))
             j = np.random.randint(len(graph.neighbors(i)))
             friend = graph.neighbors(i)[j]
             degree_dist.append(len(graph.neighbors(friend)))
+            count += 1
+            if count >= repeat:
+                break
 
-    elif method == 'iterative':
+    elif method == 'iterate':
         for i in range(graph.num_nodes):
             count: float = 0
-            if graph.neighbors(i) is None:
+            if len(graph.neighbors(i)) == 0:
                 break
             for j in graph.neighbors(i):
                 count += len(graph.neighbors(j))
             count /= len(graph.neighbors(i))
             degree_dist.append(count)
 
+    if return_both:
+        return second_dist, degree_dist
     return degree_dist
