@@ -19,13 +19,11 @@ def configuration_model(num_nodes: int, deg: float, dist: str) -> np.ndarray:
         samples = [poisson_sample(deg) for _ in range(num_nodes)]
     else:
         raise Exception(f'Distribution {dist} not supported.')
-
     index = np.array([i for i in range(num_nodes) for _ in range(samples[i])])
     index = np.random.permutation(index)
     if len(index) % 2 == 1:
         index = index[:-1]
     index = np.reshape(index, (-1, 2))
-
     return index
 
 
