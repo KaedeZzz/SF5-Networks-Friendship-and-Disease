@@ -58,9 +58,12 @@ class SirGraph(object):
         self.num_nodes = graph.num_nodes
         self.directed = graph.directed
         self.adj = self.graph.adj
-        self.state_keys = [self.S, self.I, self.R] = range(3)
+        self.state_keys = [self.S,
+                           self.I,
+                           self.R] = range(3)
 
         self.state = [self.S for _ in range(self.num_nodes)]
+        self.i_list = []
         if 0.0 < prob < 1.0: # Optional, initialize infection state
             self.set_init_state(prob)
 
@@ -77,25 +80,29 @@ class SirGraph(object):
         for i in range(self.num_nodes):
             if np.random.binomial(n=1, p=prob, size=1) == 1.0:
                 self.state[i] = self.I
+                self.i_list.append(i)
 
     def advance(self, rate: float) -> list[int]:
         """
-        Advance the simulation of infection by one step.
+        Advance the simulation of infection by one step, and update the state.
         :param rate: Probability of transition (probability that an infectious node
          infects neighbors)
-        :return: the new SIR state of the graph.
+        :return: None.
         """
         if not 0.0 < rate < 1.0:
             raise ValueError('Transition rate must be between 0 and 1.')
-        next_state = [self.S for _ in range(self.num_nodes)]
-        for node in range(self.num_nodes):
-            if self.state[node] == self.I:
-                next_state[node] = self.R
-                infection_list = np.random.binomial(n=1, p=rate, size=len(self.adj[node]))
-                for friend in self.adj[node]:
-                    if self.state[friend] == self.S and infection_list[friend]:
-                        next_state[friend] = self.I
-        return next_state
+        next_state = self.state
+        for node in self.i_list:
+            if self.state[node] != self.I:
+                raise ValueError("Unmatched state and infectious state.")
+            self.i_list.remove(node)
+            next_state[node] = self.R
+            infection_list = np.random.binomial(n=1, p=rate, size=len(self.adj[node]))
+            for i, friend in enumerate(self.adj[node]):
+                if self.state[friend] == self.S and infection_list[i]:
+                    next_state[friend] = self.I
+                    self.i_list.append(friend)
+        self.state = next_state
 
     def run(self, rate):
         """
@@ -108,4 +115,5 @@ class SirGraph(object):
         while self.I in self.state:
             self.advance(rate)
             transient_time += 1
+            # print(f"Run {transient_time}, Infectious: {self.state.count(self.I)}, Recovered: {self.state.count(self.R)}")
         return self.state, transient_time
