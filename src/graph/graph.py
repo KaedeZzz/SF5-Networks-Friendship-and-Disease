@@ -45,16 +45,36 @@ class SirGraph(Graph): # SIR Graph
     def __init__(self, num_nodes: int, directed=False):
         super().__init__(num_nodes, directed)
         self.state_keys = [self.S, self.I, self.R] = range(3)
+        """
+        S: susceptible node
+        I: infectious
+        R: recovered
+        """
         self.state = [self.S for _ in range(self.num_nodes)]
 
-    def set_init_state(self, prob):
+    def set_init_state(self, prob: float):
+        """
+        Randomly set the initial state of infection;
+        some node being infectious, the rest being susceptible.
+
+        :param prob: Initial probability of infection.
+        :return: None
+        """
+        if not 0.0 < prob < 1.0:
+            raise ValueError('Initial probability must be between 0 and 1.')
         for i in range(self.num_nodes):
             if np.random.binomial(n=1, p=prob, size=1) == 1.0:
                 self.state[i] = self.I
 
-    def advance(self, rate: float = 0.0) -> list[int]:
+    def advance(self, rate: float) -> list[int]:
+        """
+        Advance the simulation of infection by one step.
+        :param rate: Probability of transition (probability that an infectious node
+         infects neighbors)
+        :return: the new SIR state of the graph.
+        """
         if not 0.0 < rate < 1.0:
-            raise ValueError('Infection rate must be between 0 and 1.')
+            raise ValueError('Transition rate must be between 0 and 1.')
         next_state = [self.S for _ in range(self.num_nodes)]
         for node in range(self.num_nodes):
             if self.state[node] == self.I:
@@ -66,9 +86,16 @@ class SirGraph(Graph): # SIR Graph
         return next_state
 
     def run(self, init_prob, rate):
+        """
+        Run the simulation of infection until it reaches steady state.
+        :param init_prob: Initial probability of infection.
+        :param rate: Probability of transition (probability that an infectious node
+         infects neighbors)
+        :return: A pair of (final state, time taken to reach steady state).
+        """
         self.set_init_state(init_prob)
-        time_scale = 0
+        transient_time = 0
         while self.I in self.state:
             self.advance(rate)
-            time_scale += 1
-        return self.state, time_scale
+            transient_time += 1
+        return self.state, transient_time
