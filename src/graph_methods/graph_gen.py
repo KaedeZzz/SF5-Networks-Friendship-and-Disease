@@ -41,7 +41,6 @@ def random_graph(num_nodes: int, p: float = 0.0, deg: float = 0.0, method: str =
     if num_nodes <= 1:
         raise ValueError('Number of nodes must be greater than 1.')
 
-
     graph = Graph(num_nodes, directed=directed)
 
 
@@ -62,7 +61,7 @@ def random_graph(num_nodes: int, p: float = 0.0, deg: float = 0.0, method: str =
         while attempts < edge_count:
             i = np.random.randint(num_nodes)
             j = np.random.randint(num_nodes)
-            if not (i == j or graph.adj[i, j] == 1):
+            if not (i == j or (j in graph.adj[i])):
                 graph.add_edge(i, j)
                 attempts += 1
 

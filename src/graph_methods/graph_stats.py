@@ -1,15 +1,15 @@
 import numpy as np
 from src.graph import Graph
 
-def count_edges(network: Graph, method='naive') -> int:
+def count_edges(graph: Graph, method='naive') -> int:
     """
     Count the number of edges in a network.
-    :param network: the network
+    :param graph: the network
     :param method: 'naive' lists all edges by visiting all node pairs.
     :return: An integer of count. Returns -1 if no proper method is selected.
     """
     if method == 'naive':
-        return len(network.edge_list())
+        return len(graph.adj)
     else:
         raise Exception(f'Method {method} not supported.')
 

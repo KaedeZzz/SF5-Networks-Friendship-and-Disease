@@ -10,7 +10,9 @@ class Graph(object):
             raise ValueError('Number of nodes must be greater than 1.')
 
         self.num_nodes = num_nodes # Number of nodes in the graph
-        self.adj = np.zeros((num_nodes, num_nodes)) # Initialise adjacency matrix with no edges in the graph
+        # Initialise adjacency matrix as a list of lists, where each list
+        # is a list of neighbors of a node
+        self.adj = [list() for _ in range(self.num_nodes)]
         self.directed = directed
 
     def add_edge(self, i: int, j: int) -> None:
@@ -22,12 +24,9 @@ class Graph(object):
         if i not in range(self.num_nodes) or j not in range(self.num_nodes):
             raise ValueError('Index out of range.')
 
+        self.adj[i].append(j)
         if not self.directed:
-            # If graph is not directed, adjacency matrix is symmetric and two entries need to be added for one edge
-            self.adj[i, j] = 1
-            self.adj[j, i] = 1
-        else:
-            self.adj[i, j] = 1
+            self.adj[j].append(i)
 
     def neighbors(self, i: int) -> np.array:
         """
@@ -38,11 +37,37 @@ class Graph(object):
         if i not in range(self.num_nodes):
             raise ValueError('Index out of range.')
 
-        return np.where(self.adj[i, :] == 1)[0]
+        return self.adj[i]
 
-    def edge_list(self) -> list:
-        """
-        List indices of all source and target nodes of all edges of the graph.
-        :return: A list of tuples of indices in the form of (source, target).
-        """
-        return [(i, j) for i in range(self.num_nodes) for j in self.neighbors(i) if i < j]
+
+class SirGraph(Graph): # SIR Graph
+    def __init__(self, num_nodes: int, directed=False):
+        super().__init__(num_nodes, directed)
+        self.state_keys = [self.S, self.I, self.R] = range(3)
+        self.state = [self.S for _ in range(self.num_nodes)]
+
+    def set_init_state(self, prob):
+        for i in range(self.num_nodes):
+            if np.random.binomial(n=1, p=prob, size=1) == 1.0:
+                self.state[i] = self.I
+
+    def advance(self, rate: float = 0.0) -> list[int]:
+        if not 0.0 < rate < 1.0:
+            raise ValueError('Infection rate must be between 0 and 1.')
+        next_state = [self.S for _ in range(self.num_nodes)]
+        for node in range(self.num_nodes):
+            if self.state[node] == self.I:
+                next_state[node] = self.R
+                infection_list = np.random.binomial(n=1, p=rate, size=len(self.adj[node]))
+                for friend in self.adj[node]:
+                    if self.state[friend] == self.S and infection_list[friend]:
+                        next_state[friend] = self.I
+        return next_state
+
+    def run(self, init_prob, rate):
+        self.set_init_state(init_prob)
+        time_scale = 0
+        while self.I in self.state:
+            self.advance(rate)
+            time_scale += 1
+        return self.state, time_scale
