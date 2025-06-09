@@ -1,6 +1,5 @@
 import numpy as np
 
-
 class Graph(object):
     def __init__(self, num_nodes: int, directed=False):
         """
