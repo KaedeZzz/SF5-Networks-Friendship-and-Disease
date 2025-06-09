@@ -40,18 +40,26 @@ class Graph(object):
         return self.adj[i]
 
 
-class SirGraph(object): # SIR Graph
+class SirGraph(object):
+    # SIR Graph
+    """
+    S: susceptible node
+    I: infectious
+    R: recovered
+    """
+    table = {
+        0: 'Susceptible',
+        1: 'Infectious',
+        2: 'Recovered',
+    }
+
     def __init__(self, graph: Graph, prob: float = 0.0):
         self.graph = graph
         self.num_nodes = graph.num_nodes
         self.directed = graph.directed
         self.adj = self.graph.adj
         self.state_keys = [self.S, self.I, self.R] = range(3)
-        """
-        S: susceptible node
-        I: infectious
-        R: recovered
-        """
+
         self.state = [self.S for _ in range(self.num_nodes)]
         if 0.0 < prob < 1.0: # Optional, initialize infection state
             self.set_init_state(prob)
@@ -89,15 +97,13 @@ class SirGraph(object): # SIR Graph
                         next_state[friend] = self.I
         return next_state
 
-    def run(self, init_prob, rate):
+    def run(self, rate):
         """
         Run the simulation of infection until it reaches steady state.
-        :param init_prob: Initial probability of infection.
         :param rate: Probability of transition (probability that an infectious node
          infects neighbors)
         :return: A pair of (final state, time taken to reach steady state).
         """
-        self.set_init_state(init_prob)
         transient_time = 0
         while self.I in self.state:
             self.advance(rate)
