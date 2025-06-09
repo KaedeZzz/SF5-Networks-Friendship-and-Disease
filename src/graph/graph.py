@@ -40,9 +40,12 @@ class Graph(object):
         return self.adj[i]
 
 
-class SirGraph(Graph): # SIR Graph
-    def __init__(self, num_nodes: int, directed=False):
-        super().__init__(num_nodes, directed)
+class SirGraph(object): # SIR Graph
+    def __init__(self, graph: Graph, prob: float = 0.0):
+        self.graph = graph
+        self.num_nodes = graph.num_nodes
+        self.directed = graph.directed
+        self.adj = self.graph.adj
         self.state_keys = [self.S, self.I, self.R] = range(3)
         """
         S: susceptible node
@@ -50,6 +53,8 @@ class SirGraph(Graph): # SIR Graph
         R: recovered
         """
         self.state = [self.S for _ in range(self.num_nodes)]
+        if 0.0 < prob < 1.0: # Optional, initialize infection state
+            self.set_init_state(prob)
 
     def set_init_state(self, prob: float):
         """

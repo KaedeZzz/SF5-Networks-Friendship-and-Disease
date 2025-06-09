@@ -43,8 +43,6 @@ def random_graph(num_nodes: int, p: float = 0.0, deg: float = 0.0, method: str =
 
     graph = Graph(num_nodes, directed=directed)
 
-
-
     if method == 'naive':
         if p < 0 or p > 1:
             raise ValueError('Probability of edge generation must be between 0 and 1.')
