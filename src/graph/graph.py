@@ -82,6 +82,13 @@ class SirGraph(object):
                 self.state[i] = self.I
                 self.i_list.append(i)
 
+    def has_infected(self) -> bool:
+        """
+        Return True if any node is infected.
+        :return: Boolean.
+        """
+        return self.I in self.state
+
     def advance(self, rate: float) -> list[int]:
         """
         Advance the simulation of infection by one step, and update the state.
