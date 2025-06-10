@@ -1,4 +1,5 @@
 import numpy as np
+from src.tools import check_rate
 
 class Graph(object):
     def __init__(self, num_nodes: int, directed=False):
@@ -89,15 +90,14 @@ class SirGraph(object):
         """
         return self.I in self.state
 
-    def advance(self, rate: float) -> list[int]:
+    def advance(self, rate: float) -> None:
         """
         Advance the simulation of infection by one step, and update the state.
         :param rate: Probability of transition (probability that an infectious node
          infects neighbors)
         :return: None.
         """
-        if not 0.0 < rate < 1.0:
-            raise ValueError('Transition rate must be between 0 and 1.')
+        check_rate(rate)
         next_state = self.state
         for node in self.i_list:
             if self.state[node] != self.I:
