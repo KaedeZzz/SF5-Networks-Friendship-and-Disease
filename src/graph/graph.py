@@ -62,7 +62,8 @@ class SirGraph(object):
         self.prob = prob
         self.state_keys = [self.S,
                            self.I,
-                           self.R] = range(3)
+                           self.R,
+                           self.V] = range(4)
 
         self.state = [self.S for _ in range(self.num_nodes)]
         self.i_list = []
@@ -144,3 +145,10 @@ class SirGraph(object):
         for i in range(self.num_nodes):
             recovered_list[i] /= repeat
         return recovered_list
+
+    def vaccinate(self, vac_rate):
+        rng = np.random.default_rng()
+        binom = rng.binomial(n=1, p=vac_rate, size=self.num_nodes)
+        for i in range(self.num_nodes):
+            if binom[i] == 1:
+                self.state[i] = self.V

@@ -32,18 +32,26 @@ def non_infected_probs(graph: Graph, rate: float, init_probs: list) -> list:
     return probs
 
 
-def non_infected_cluster_size(graph: Graph, rate: float, repeat: int = 10) -> list:
+def outbreak_cluster_size(graph: Graph, rate: float, repeat: int = 30, vac_list = list | None) -> list:
     """
     Obtain a distribution of outbreak cluster sizes from SciPy disjoint set.
     :param graph: The graph.
     :param rate: Transition rate.
+    :param repeat: Repeat times.
+    :param vac_list: List of vaccinated nodes.
     :return: A list of cluster sizes sampled from different experiments and nodes.
     """
     record = []
     for _ in range(repeat):
         C = DisjointSet(range(graph.num_nodes))
         for i in range(graph.num_nodes):
+            if vac_list:
+                if vac_list[i]:
+                    continue
             for j in graph.neighbors(i):
+                if vac_list:
+                    if vac_list[j]:
+                        continue
                 if np.random.random() < rate:
                     C.merge(i, j)
         check_node = np.random.randint(graph.num_nodes)
