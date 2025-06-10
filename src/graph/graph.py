@@ -59,6 +59,7 @@ class SirGraph(object):
         self.num_nodes = graph.num_nodes
         self.directed = graph.directed
         self.adj = self.graph.adj
+        self.prob = prob
         self.state_keys = [self.S,
                            self.I,
                            self.R] = range(3)
@@ -78,8 +79,12 @@ class SirGraph(object):
         """
         if not 0.0 < prob < 1.0:
             raise ValueError('Initial probability must be between 0 and 1.')
+        self.state = [self.S for _ in range(self.num_nodes)]
+        self.i_list = []
+        rng = np.random.default_rng()
+        binom = rng.binomial(n=1, p=prob, size=self.num_nodes)
         for i in range(self.num_nodes):
-            if np.random.binomial(n=1, p=prob, size=1) == 1.0:
+            if binom[i] == 1:
                 self.state[i] = self.I
                 self.i_list.append(i)
 
@@ -118,9 +123,24 @@ class SirGraph(object):
          infects neighbors)
         :return: A pair of (final state, time taken to reach steady state).
         """
+        check_rate(rate)
         transient_time = 0
         while self.I in self.state:
             self.advance(rate)
             transient_time += 1
             # print(f"Run {transient_time}, Infectious: {self.state.count(self.I)}, Recovered: {self.state.count(self.R)}")
         return self.state, transient_time
+
+    def infected_estimate(self, rate, repeat=200):
+        recovered_list = [0 for _ in range(self.num_nodes)]
+        for _ in range(repeat):
+            self.set_init_state(self.prob)
+            res_state, _ = self.run(rate)
+            for i, item in enumerate(res_state):
+                inc = 1 if item == self.R else 0
+                recovered_list[i] += inc
+            if len(recovered_list) > self.num_nodes:
+                raise ValueError("Length of recovered list exceeds number of nodes.")
+        for i in range(self.num_nodes):
+            recovered_list[i] /= repeat
+        return recovered_list
