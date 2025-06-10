@@ -1,4 +1,6 @@
 from src.graph import Graph
+import numpy as np
+from scipy.cluster.hierarchy import DisjointSet
 
 def non_infected_probs(graph: Graph, rate: float, init_probs: list) -> list:
     """
@@ -28,3 +30,22 @@ def non_infected_probs(graph: Graph, rate: float, init_probs: list) -> list:
         probs = new_probs
 
     return probs
+
+
+def non_infected_cluster_size(graph: Graph, rate: float, repeat: int = 10) -> list:
+    """
+    Obtain a distribution of outbreak cluster sizes from SciPy disjoint set.
+    :param graph: The graph.
+    :param rate: Transition rate.
+    :return: A list of cluster sizes sampled from different experiments and nodes.
+    """
+    record = []
+    for _ in range(repeat):
+        C = DisjointSet(range(graph.num_nodes))
+        for i in range(graph.num_nodes):
+            for j in graph.neighbors(i):
+                if np.random.random() < rate:
+                    C.merge(i, j)
+        check_node = np.random.randint(graph.num_nodes)
+        record.append(C.subset_size(check_node))
+    return record
