@@ -1,7 +1,6 @@
 import numpy as np
 from matplotlib import pyplot as plt
 from src.graph import SirGraph as SIR
-from src.graph_methods import random_graph
 from src.io import load_graph, save_dir
 
 path = save_dir / 'rg_n10000_d20_p.pkl'
