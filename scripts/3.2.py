@@ -20,5 +20,5 @@ if __name__ == '__main__':
     plt.plot(rate_ind_list, recovered_list)
     plt.xlabel('Transfer rate')
     plt.ylabel('Number of recovery')
-    plt.vlines(x=-1.5, color='r', ymin=0, ymax=max(recovered_list))
+    plt.vlines(x=-1.6, color='r', ymin=0, ymax=max(recovered_list))
     plt.show()
