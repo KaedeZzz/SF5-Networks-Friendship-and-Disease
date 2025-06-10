@@ -5,7 +5,7 @@ from src.io import save_graph, load_graph
 if __name__ == '__main__':
     num_nodes = 10_000
     deg = 20
-    method = 'poisson'
+    method = 'geometric'
     graph = random_graph(num_nodes=num_nodes,
                          deg=deg,
                          method=method)
