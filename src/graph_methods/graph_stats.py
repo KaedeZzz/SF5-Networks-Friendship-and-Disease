@@ -48,7 +48,8 @@ def get_degree_dist(graph: Graph) -> list[int]:
     degree_dist: list[int] = []
     for i in range(graph.num_nodes):
         degree_dist.append(len(graph.neighbors(i)))
-
+    if len(degree_dist) != graph.num_nodes:
+        raise ValueError('Length of degree distribution does not match graph.')
     return degree_dist
 
 
@@ -92,3 +93,23 @@ def get_friends_degree(graph: Graph, method = 'sample', repeat = 2000, return_bo
     if return_both:
         return second_dist, degree_dist
     return degree_dist
+
+
+def friend_infect_vec(graph: Graph, infect_vec: list) -> list:
+    """
+    Estimate probability of infection from friend vector given probability of infection vector.
+    :param graph: The graph.
+    :param infect_vec: Probability of infection vector.
+    :return: A list representing the vector.
+    """
+    res_vec = []
+    degrees = get_degree_dist(graph)
+    for i in range(graph.num_nodes):
+        if degrees[i] == 0:
+            continue
+        total = 0
+        for j in graph.neighbors(i):
+            total += infect_vec[j]
+        total /= degrees[i]
+        res_vec.append(total)
+    return res_vec
