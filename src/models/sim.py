@@ -32,7 +32,7 @@ def non_infected_probs(graph: Graph, rate: float, init_probs: list) -> list:
     return probs
 
 
-def outbreak_cluster_size(graph: Graph, rate: float, repeat: int = 30, vac_list = list | None) -> list:
+def outbreak_cluster_size(graph: Graph, rate: float, repeat: int = 50, vac_list: list | None = []) -> list:
     """
     Obtain a distribution of outbreak cluster sizes from SciPy disjoint set.
     :param graph: The graph.
